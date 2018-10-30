@@ -38,43 +38,36 @@ int main(void){
     bsum += b[i];
   }
   //ヒストグラムをつくる
-//  min = (int)(min * 10) / 10;
-//  max = (int)((max + 0.9) * 10) / 10;
-  fnum = (double)((max - min) / W);
-//  printf("%f - %f / %f = %d\n", max, min, W, fnum);
+  fnum = (double)((max - min) / W); //幅 W の階級をつくる
   freqs = (double*)(malloc(sizeof(double) * fnum));
   for(int i = 0; i < fnum; i++) freqs[i] = 0;
-  std::sort(b, b + B / N);
-  p = min + W;
+  std::sort(b, b + B / N);  //リサンプリングデータから計算した推定量は昇順に並べておく
+  p = min + W;              //p は隣り合う階級の境の値をあらわす
   for(int i = 0, j = 0; i < N; i++){
-    if(b[i] > p){
+    if(b[i] > p){           //次の階級へ移る動作
       j++;
       i--;
       p += W;
     }else{
-      freqs[j]++;
+      freqs[j]++;           //度数が 1 カウントされる
     }
   }
   for (int i = 0; i < fnum; i++) {
-    freqs[i] /= B / N;
+    freqs[i] /= B / N;      //相対度数になおす
   }
   //信頼区間の端をとる
   a = 0;
   k = 0;
-//  printf("la\n");
   while(a < ALPHA / 2){
     a += freqs[k];
     k++;
-//    printf("[%d]: %f\n", k, a);
   }
   la = min + k * W + W / 2;
   a = 0;
   k = 0;
-//  printf("ua\n");
   while(a < 1.0 - ALPHA / 2){
     a += freqs[k];
     k++;
-//    printf("[%d]: %f\n", k, a);
   }
   ua = min + k * W + W / 2;
   printf("%8.2f %% %7.2f %%\n", ALPHA / 2 * 100, (1.0 - ALPHA / 2) * 100);
